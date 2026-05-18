@@ -1,0 +1,200 @@
+{
+  "info": {
+    "name": "Nhom4 API Test Results",
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "description": "Full API testing collection with validation cases",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth - Register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Nguyen Van A\",\n  \"email\": \"user@example.com\",\n  \"password\": \"123456\"\n}"
+        },
+        "url": { "raw": "{{base_url}}/api/auth/register" }
+      },
+      "response": [
+        {
+          "name": "Register - Email existed",
+          "status": "Bad Request",
+          "code": 400,
+          "body": "{\n  \"success\": false,\n  \"message\": \"Email nay da duoc dang ky, vui long su dung email khac\"\n}"
+        },
+        {
+          "name": "Register - Password too short",
+          "status": "Bad Request",
+          "code": 400,
+          "body": "{\n  \"success\": false,\n  \"message\": \"Mat khau phai co it nhat 6 ky tu\"\n}"
+        },
+        {
+          "name": "Register - Success",
+          "status": "Created",
+          "code": 201,
+          "body": "{\n  \"success\": true,\n  \"message\": \"Dang ky thanh cong! Vui long kiem tra email de lay ma OTP xac thuc tai khoan.\",\n  \"data\": {\"id\": 3, \"name\": \"Nguyen Van Aa\", \"email\": \"23110316@student.hcmute.edu.vn\"}\n}"
+        }
+      ]
+    },
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"123456\"\n}"
+        },
+        "url": { "raw": "{{base_url}}/api/auth/login" }
+      },
+      "response": [
+        {
+          "name": "Login - Success",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"success\": true,\n  \"message\": \"Dang nhap thanh cong\",\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"redirectUrl\": \"/admin/profile\",\n  \"user\": {\"id\": 1, \"name\": null, \"email\": \"admin@example.com\", \"role\": \"admin\"}\n}"
+        },
+        {
+          "name": "Login - Rate limit",
+          "status": "Too Many Requests",
+          "code": 429,
+          "body": "{\n  \"success\": false,\n  \"message\": \"Số lần đăng nhập vượt quá giới hạn, vui lòng thử lại sau 15 phút\"\n}"
+        },
+        {
+          "name": "Login - Missing password",
+          "status": "Bad Request",
+          "code": 400,
+          "body": "{\n  \"success\": false,\n  \"message\": \"Email va password khong duoc de trong\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Auth - Verify OTP",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"23110316@student.hcmute.edu.vn\",\n  \"otp\": \"273594\"\n}"
+        },
+        "url": { "raw": "{{base_url}}/api/auth/verify-otp" }
+      },
+      "response": [
+        {
+          "name": "Verify OTP - Success",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"success\": true,\n  \"message\": \"Xac thuc OTP thanh cong! Tai khoan cua ban da duoc kich hoat.\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Auth - Forgot Password",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"23110316@student.hcmute.edu.vn\"\n}"
+        },
+        "url": { "raw": "{{base_url}}/api/auth/forgot-password" }
+      },
+      "response": [
+        {
+          "name": "Forgot - OTP sent",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"success\": true,\n  \"message\": \"Mã OTP đã được gửi đến email của bạn. Vui lòng kiểm tra trong 5 phút.\"\n}"
+        },
+        {
+          "name": "Forgot - Rate limit",
+          "status": "Too Many Requests",
+          "code": 429,
+          "body": "{\n  \"success\": false,\n  \"message\": \"Số lần yêu cầu OTP vượt quá giới hạn, vui lòng thử lại sau 30 phút\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Auth - Reset Password",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"23110316@student.hcmute.edu.vn\",\n  \"otp\": \"725564\",\n  \"newPassword\": \"123457\"\n}"
+        },
+        "url": { "raw": "{{base_url}}/api/auth/reset-password" }
+      },
+      "response": [
+        {
+          "name": "Reset - Success",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"success\": true,\n  \"message\": \"Đổi mật khẩu thành công! Vui lòng đăng nhập lại.\"\n}"
+        },
+        {
+          "name": "Reset - Invalid OTP",
+          "status": "Bad Request",
+          "code": 400,
+          "body": "{\n  \"success\": false,\n  \"message\": \"Mã OTP không hợp lệ.\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Profile - Get Profile",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": { "raw": "{{base_url}}/api/profile" }
+      },
+      "response": [
+        {
+          "name": "Profile - Success",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"success\": true,\n  \"message\": \"Lấy thông tin profile thành công\",\n  \"data\": {\"user\": {\"id\": 3, \"email\": \"23110316@student.hcmute.edu.vn\"}, \"profile\": {\"id\": 2}}\n}"
+        },
+        {
+          "name": "Profile - No token",
+          "status": "Unauthorized",
+          "code": 401,
+          "body": "{\n  \"success\": false,\n  \"message\": \"Vui lòng cung cấp token\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Profile - Get By ID (Admin)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": { "raw": "{{base_url}}/api/profile/1" }
+      },
+      "response": [
+        {
+          "name": "Admin - Success",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"success\": true,\n  \"message\": \"Lấy thông tin profile thành công\"\n}"
+        },
+        {
+          "name": "Admin - No token",
+          "status": "Unauthorized",
+          "code": 401,
+          "body": "{\n  \"success\": false,\n  \"message\": \"Vui lòng cung cấp token\"\n}"
+        },
+        {
+          "name": "Admin - Not allowed",
+          "status": "Forbidden",
+          "code": 403,
+          "body": "{\n  \"success\": false,\n  \"message\": \"Chỉ admin mới có quyền truy cập\"\n}"
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000" },
+    { "key": "token", "value": "" }
+  ]
+}
