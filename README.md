@@ -214,10 +214,18 @@ Middleware validation bắt lỗi ngay lập tức khi thiếu trường bắt b
 Sau quá nhiều lần đăng nhập thất bại liên tiếp, IP bị chặn tạm thời và nhận thông báo thử lại sau.
 
 ## 1 số hình ảnh UI:
-<img width="1894" height="830" alt="image" src="https://github.com/user-attachments/assets/026b9ebf-a53e-43fe-9b03-080f0a6026ed" />
+<img width="1896" height="906" alt="image" src="https://github.com/user-attachments/assets/df113392-3630-4150-b337-e2d314cd1ace" />
 
-<img width="1900" height="907" alt="image" src="https://github.com/user-attachments/assets/106848e9-6c74-4add-99de-725af6887a74" />
+<img width="1895" height="907" alt="image" src="https://github.com/user-attachments/assets/b5feacae-5801-4919-b86b-6cc36668bc90" />
 
-<img width="1888" height="910" alt="image" src="https://github.com/user-attachments/assets/aa908763-48b6-4e82-994e-bd7076f56f03" />
+<img width="1892" height="901" alt="image" src="https://github.com/user-attachments/assets/30f9e1f8-919d-485d-8275-18f58a3b1cdc" />
 
-<img width="1894" height="907" alt="image" src="https://github.com/user-attachments/assets/f8c05ea3-d00c-415d-870b-810afd7f58d4" />
+<img width="1894" height="894" alt="image" src="https://github.com/user-attachments/assets/06755469-c0c3-4ca9-94a8-53efe63d4db2" />
+
+<img width="1895" height="905" alt="image" src="https://github.com/user-attachments/assets/2c5f5c13-401b-49b7-b98b-85092f32ad47" />
+
+<img width="1891" height="898" alt="image" src="https://github.com/user-attachments/assets/7c37b22e-887e-48e1-b050-122d0e9460d0" />
+
+<img width="1900" height="791" alt="image" src="https://github.com/user-attachments/assets/c33a06a7-2fc8-4ff1-b3c5-8105b45003ac" />
+
+<img width="1894" height="908" alt="image" src="https://github.com/user-attachments/assets/cb7a13a6-d038-404b-bf24-56081ef47743" />
