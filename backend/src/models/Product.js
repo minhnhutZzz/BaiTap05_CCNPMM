@@ -35,6 +35,11 @@ const Product = sequelize.define(
       allowNull: false,
       defaultValue: 0,
     },
+    views: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
     thumbnail: {
       type: DataTypes.STRING(255),
       allowNull: true,

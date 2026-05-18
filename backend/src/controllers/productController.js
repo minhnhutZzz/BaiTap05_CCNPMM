@@ -2,10 +2,10 @@ const { Product, Category, ProductImage } = require('../models');
 const { Op } = require('sequelize');
 
 const productController = {
-  // Lấy danh sách sản phẩm (có hỗ trợ tìm kiếm và lọc)
+  // Lấy danh sách sản phẩm (có hỗ trợ tìm kiếm, lọc và phân trang)
   getProducts: async (req, res) => {
     try {
-      const { search, category_id, is_promotion, is_new, sort } = req.query;
+      const { search, category_id, is_promotion, is_new, sort, page, limit } = req.query;
       let whereClause = {};
 
       // Điều kiện tìm kiếm theo tên
@@ -33,29 +33,49 @@ const productController = {
       if (sort === 'price_asc') orderClause = [['price', 'ASC']];
       if (sort === 'price_desc') orderClause = [['price', 'DESC']];
       if (sort === 'best_seller') orderClause = [['sold', 'DESC']];
+      if (sort === 'most_viewed') orderClause = [['views', 'DESC']];
 
-      const products = await Product.findAll({
+      // Phân trang (hỗ trợ Lazy Loading)
+      const pageNum = parseInt(page) || 1;
+      const pageSize = parseInt(limit) || 8; // Mặc định 8 sp mỗi trang
+      const offset = (pageNum - 1) * pageSize;
+
+      const { count, rows: products } = await Product.findAndCountAll({
         where: whereClause,
         order: orderClause,
+        limit: pageSize,
+        offset: offset,
         include: [{ model: Category, attributes: ['name'] }]
       });
 
-      res.status(200).json({ success: true, data: products });
+      const totalPages = Math.ceil(count / pageSize);
+
+      res.status(200).json({
+        success: true,
+        data: products,
+        pagination: {
+          total: count,
+          page: pageNum,
+          limit: pageSize,
+          totalPages,
+          hasMore: pageNum < totalPages // Dùng cho Lazy Loading
+        }
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, message: 'Lỗi server khi lấy sản phẩm' });
     }
   },
 
-  // Lấy chi tiết 1 sản phẩm
+  // Lấy chi tiết 1 sản phẩm (tự động tăng views)
   getProductById: async (req, res) => {
     try {
       const { id } = req.params;
-      
+
       const product = await Product.findByPk(id, {
         include: [
           { model: Category, attributes: ['id', 'name'] },
-          { model: ProductImage, as: 'images', attributes: ['id', 'image_url'] } // Lấy ảnh phụ cho Swiper
+          { model: ProductImage, as: 'images', attributes: ['id', 'image_url'] }
         ]
       });
 
@@ -63,21 +83,24 @@ const productController = {
         return res.status(404).json({ success: false, message: 'Không tìm thấy sản phẩm' });
       }
 
+      // Tăng lượt xem mỗi khi xem chi tiết sản phẩm
+      await product.increment('views', { by: 1 });
+
       // Lấy các sản phẩm tương tự (cùng category)
       const similarProducts = await Product.findAll({
-        where: { 
+        where: {
           category_id: product.category_id,
-          id: { [Op.ne]: id } // Khác ID hiện tại
+          id: { [Op.ne]: id }
         },
         limit: 4
       });
 
-      res.status(200).json({ 
-        success: true, 
+      res.status(200).json({
+        success: true,
         data: {
           product,
           similarProducts
-        } 
+        }
       });
     } catch (error) {
       console.error(error);
@@ -93,6 +116,72 @@ const productController = {
     } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, message: 'Lỗi server khi lấy danh mục' });
+    }
+  },
+
+  // Top 10 sản phẩm bán chạy nhất (có phân trang ngang)
+  getTopBestSellers: async (req, res) => {
+    try {
+      const { page, limit } = req.query;
+      const pageNum = parseInt(page) || 1;
+      const pageSize = parseInt(limit) || 10; // Mặc định lấy top 10
+      const offset = (pageNum - 1) * pageSize;
+
+      const { count, rows: products } = await Product.findAndCountAll({
+        order: [['sold', 'DESC']],
+        limit: pageSize,
+        offset: offset,
+        include: [{ model: Category, attributes: ['name'] }]
+      });
+
+      const totalPages = Math.ceil(count / pageSize);
+
+      res.status(200).json({
+        success: true,
+        data: products,
+        pagination: {
+          total: count,
+          page: pageNum,
+          limit: pageSize,
+          totalPages
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Lỗi server khi lấy top bán chạy' });
+    }
+  },
+
+  // Top 10 sản phẩm xem nhiều nhất (có phân trang ngang)
+  getTopMostViewed: async (req, res) => {
+    try {
+      const { page, limit } = req.query;
+      const pageNum = parseInt(page) || 1;
+      const pageSize = parseInt(limit) || 10;
+      const offset = (pageNum - 1) * pageSize;
+
+      const { count, rows: products } = await Product.findAndCountAll({
+        order: [['views', 'DESC']],
+        limit: pageSize,
+        offset: offset,
+        include: [{ model: Category, attributes: ['name'] }]
+      });
+
+      const totalPages = Math.ceil(count / pageSize);
+
+      res.status(200).json({
+        success: true,
+        data: products,
+        pagination: {
+          total: count,
+          page: pageNum,
+          limit: pageSize,
+          totalPages
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Lỗi server khi lấy top xem nhiều' });
     }
   }
 };
