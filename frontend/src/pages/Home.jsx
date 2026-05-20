@@ -166,10 +166,12 @@ const AllProductsSection = ({ categories }) => {
   const [initialLoading, setInitialLoading] = useState(true);
   const loaderRef = useRef(null);
   const filtersRef = useRef(filters);
+  const loadingRef = useRef(false);
 
   // Fetch products (reset or append)
   const fetchProducts = useCallback(async (currentPage, currentFilters, reset = false) => {
-    if (loading && !reset) return;
+    if (loadingRef.current && !reset) return;
+    loadingRef.current = true;
     setLoading(true);
     try {
       const params = { page: currentPage, limit: 8, ...currentFilters };
@@ -191,6 +193,7 @@ const AllProductsSection = ({ categories }) => {
     } catch (err) {
       console.error(err);
     } finally {
+      loadingRef.current = false;
       setLoading(false);
       setInitialLoading(false);
     }

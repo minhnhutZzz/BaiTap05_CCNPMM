@@ -29,11 +29,11 @@ const productController = {
       }
 
       // Sắp xếp
-      let orderClause = [['createdAt', 'DESC']]; // Mặc định mới nhất
-      if (sort === 'price_asc') orderClause = [['price', 'ASC']];
-      if (sort === 'price_desc') orderClause = [['price', 'DESC']];
-      if (sort === 'best_seller') orderClause = [['sold', 'DESC']];
-      if (sort === 'most_viewed') orderClause = [['views', 'DESC']];
+      let orderClause = [['createdAt', 'DESC'], ['id', 'DESC']]; // Mặc định mới nhất
+      if (sort === 'price_asc') orderClause = [['price', 'ASC'], ['id', 'DESC']];
+      if (sort === 'price_desc') orderClause = [['price', 'DESC'], ['id', 'DESC']];
+      if (sort === 'best_seller') orderClause = [['sold', 'DESC'], ['id', 'DESC']];
+      if (sort === 'most_viewed') orderClause = [['views', 'DESC'], ['id', 'DESC']];
 
       // Phân trang (hỗ trợ Lazy Loading)
       const pageNum = parseInt(page) || 1;
